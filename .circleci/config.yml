@@ -1,0 +1,106 @@
+version: 2
+
+master_only: &master_only
+  filters:
+    branches:
+      only: master
+
+tagged_release: &tagged_release
+  filters:
+    tags:
+      only: /\d+(\.\d+)(\.\d+)/
+
+jobs:
+  build:
+    docker:
+      - image: golang:1.14-alpine
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-app-{{ checksum "go.sum" }}
+      - run:
+          name: Download Dependancies
+          command: go mod download
+      - save_cache:
+          key: v1-app-{{ checksum "go.sum" }}
+          paths: 
+            - "/go/pkg/mod"
+      - run:
+          name: Build
+          command: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o enigma cmd/enigma/*.go
+      - persist_to_workspace:
+          root: /root/
+          paths:
+            - project
+
+  test:
+    docker:
+      - image: golang:1.14-alpine
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-app-{{ checksum "go.sum" }}
+      - run:
+          name: Run Tests
+          command: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test -v ./...
+
+  publish:
+    docker:
+      - image: docker:stable
+    environment:
+      IMAGE: undeadops/enigma
+    steps:
+      - setup_remote_docker
+      - attach_workspace:
+          at: /root
+      - store_artifacts:
+          path: ./enigma
+          destination: enigma.master
+      - run:
+          name: Log in to docker hub
+          command: docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+      - run:
+          name: Build Docker Container
+          command: docker build -f Dockerfile -t $IMAGE:latest .
+      - run:
+          name: Push to Docker Hub
+          command: docker push $IMAGE:latest
+
+  publish_tag:
+    docker:
+      - image: docker:stable
+    environment:
+      IMAGE: undeadops/enigma
+    steps:
+      - setup_remote_docker
+      - attach_workspace:
+          at: /root
+      - run:
+          name: pwd
+          command: echo $PWD && ls -la 
+      - store_artifacts:
+          path: ./enigma
+          destination: enigma.$CIRCLE_TAG
+      - run:
+          name: Log in to docker hub
+          command: docker login -u $REGISTRY_USER -p $REGISTRY_PASS
+      - run:
+          name: Build Docker Container
+          command: docker build -f Dockerfile -t $IMAGE:$CIRCLE_TAG .
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - publish:
+          <<: *master_only
+          requires:
+            - test
+      # - publish_tag:
+      #     <<: *tagged_release
+      #     requires:
+      #       - test
