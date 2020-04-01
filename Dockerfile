@@ -18,7 +18,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go test -v ./...
 
 FROM base as build
 # Build the binary
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/enigma
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /go/bin/enigma cmd/enigma/*.go
 
 
 FROM alpine:3.10 as release

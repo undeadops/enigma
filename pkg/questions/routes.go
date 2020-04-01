@@ -2,40 +2,30 @@ package questions
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/go-chi/chi"
-	"github.com/go-chi/render"
-
-	"github.com/undeadops/enigma"
+	"github.com/undeadops/enigma/pkg/models"
 )
 
-// Routes - Setup HTTP Routes for Qeustions pkg
-func Routes() *chi.Mux {
-	router := chi.NewRouter()
-	router.Get("/", ListQuestions)
-	return router
+// Handler - Context for Handling of Questions routes
+type Handler struct {
+	repo models.QuestionsData
 }
 
-// ListQuestions - Return a list of all questions answered
-func ListQuestions(w http.ResponseWriter, r *http.Request) {
-	q := enigma.Response{
-		Date: time.Now(),
-		Questions: []enigma.Question{
-			enigma.Question{
-				Question: "What have you eaten thus far?",
-				Answer:   "Half a costco muffin, some pistacios",
-			},
-			enigma.Question{
-				Question: "How are you feeling?",
-				Answer:   "Fine, not working so I'm not feeling stress from that",
-			},
-			enigma.Question{
-				Question: "Read anything lately?",
-				Answer:   "Golang articles",
-			},
-		},
+// NewHandler - Initialize Handler
+func NewHandler(q models.QuestionsData) *Handler {
+	return &Handler{
+		repo: q,
 	}
+}
 
-	render.JSON(w, r, q)
+// Router - A completely separate router the questions data storage handle
+func Router(h *Handler) http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", h.GetResponses)
+	r.Get("/{id:[0-9]+}", h.GetResponseID)
+	r.Post("/", h.SaveResponse)
+	r.Put("/{id:[0-9]+}", h.UpdateResponse)
+	r.Delete("/{id:[0-9]+}", h.DeleteResponse)
+	return r
 }

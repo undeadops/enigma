@@ -9,13 +9,15 @@ import (
 // Config - Object for storing configuration for database
 type Config struct {
 	URI       string
+	DB        string
 	DebugMode bool
 }
 
 // New returns a new Config struct
 func New() *Config {
 	return &Config{
-		URI:       getEnv("URI", "mongodb://localhost:27017/enigma?connect=direct"),
+		URI:       getEnv("URI", "mongodb://localhost:27017/?connect=direct"),
+		DB:        getEnv("DB", "enigma"),
 		DebugMode: getEnvAsBool("DEBUG_MODE", true),
 	}
 }

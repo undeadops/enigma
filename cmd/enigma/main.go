@@ -5,6 +5,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -13,7 +14,6 @@ import (
 	"github.com/undeadops/enigma/pkg/config"
 	"github.com/undeadops/enigma/pkg/db"
 	"github.com/undeadops/enigma/pkg/questions"
-	"github.com/undeadops/enigma/pkg/storage"
 )
 
 const defaultPortVariable = "PORT"
@@ -22,7 +22,7 @@ const defaultPort = "3000"
 // Debug - Enable debug logging
 var Debug = flag.Bool("debug", false, "Enable Debug Logging")
 
-func routes() *chi.Mux {
+func router() *chi.Mux {
 	router := chi.NewRouter()
 
 	router.Use(
@@ -34,17 +34,7 @@ func routes() *chi.Mux {
 		middleware.RequestID,
 	)
 
-	router.Route("/v1", func(r chi.Router) {
-		r.Mount("/api/questions", questions.Routes())
-	})
-
-	router.Routes()
 	return router
-}
-
-type env struct {
-	qr     storage.QuestionsData
-	router *chi.Mux
 }
 
 func main() {
@@ -53,18 +43,24 @@ func main() {
 	c := config.New()
 
 	// Setup Connection timeouts
-	//ctx, _ := context.WithTimeout(context.Background(), time.Second()*10)
 	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
 
 	// Connect to database
-	qr, err := db.SetupQuestionsRepo(ctx, c.URI)
+	qrepo, err := db.NewQuestionsRepo(ctx, c.URI, c.DB)
 	if err != nil {
 		// Implement better health checking/retry here or in lib
 		log.Fatalf("Cannot set up Database: %v", err)
 	}
 
-	s := env{qr: qr, router: routes()}
+	qhandler := questions.NewHandler(qrepo)
 
-	//server := &api.Server{DB: db, Port: defaultPort, Ctx: ctx}
-	log.Fatal(http.ListenAndServe(":"+defaultPort, s.router))
+	// Setup Router
+	router := router()
+	router.Route("api/v1", func(r chi.Router) {
+		r.Mount("/questions", questions.Router(qhandler))
+	})
+
+	log.Fatal(http.ListenAndServe(":"+defaultPort, router))
 }

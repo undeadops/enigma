@@ -9,13 +9,14 @@ import (
 
 // QuestionsRepo - MonogoDB Connection
 type QuestionsRepo struct {
-	*mongo.Client
+	*mongo.Collection
 }
 
-// SetupQuestionsRepo - Connect to Database and return connection
-func SetupQuestionsRepo(ctx context.Context, config string) (*QuestionsRepo, error) {
+// NewQuestionsRepo - Connect to Database and return connection
+func NewQuestionsRepo(ctx context.Context, config string, db string) (*QuestionsRepo, error) {
 	clientOptions := options.Client().ApplyURI(config)
 
+	// TODO: Implement Initial Retry Logic Here Maybe? or higherlevel in main function?
 	// Connect to MongoDB
 	client, err := mongo.Connect(ctx, clientOptions)
 
@@ -23,11 +24,13 @@ func SetupQuestionsRepo(ctx context.Context, config string) (*QuestionsRepo, err
 		return &QuestionsRepo{}, err
 	}
 	// Check the connection - Reduces Client resiliance...
-	err = client.Ping(context.TODO(), nil)
+	err = client.Ping(ctx, nil)
 
 	if err != nil {
 		return &QuestionsRepo{}, err
 	}
 
-	return &QuestionsRepo{client}, nil
+	collection := client.Database(db).Collection("questions")
+
+	return &QuestionsRepo{collection}, nil
 }
