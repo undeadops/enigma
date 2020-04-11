@@ -58,7 +58,7 @@ jobs:
           destination: enigma.master
       - run:
           name: Log in to docker hub
-          command: docker login -u $REGISTRY_USER --password "$REGISTRY_PASS"
+          command: docker login -u $REGISTRY_USER --password "$REGISTRY_PASSWORD"
       - run:
           name: Build Docker Container
           command: docker build -f Dockerfile -t $IMAGE:latest .
