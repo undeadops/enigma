@@ -58,7 +58,7 @@ func main() {
 
 	// Setup Router
 	router := router()
-	router.Route("api/v1", func(r chi.Router) {
+	router.Route("/api/v1", func(r chi.Router) {
 		r.Mount("/questions", questions.Router(qhandler))
 	})
 
