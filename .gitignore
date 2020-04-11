@@ -13,3 +13,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Docker Compose File
+docker-compose.yml
+init-mongo.js
