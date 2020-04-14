@@ -19,6 +19,9 @@ jobs:
       - restore_cache:
           key: v1-app-{{ checksum "go.sum" }}
       - run:
+          name: Env Vars
+          command: env 
+      - run:
           name: Download Dependancies
           command: go mod download
       - save_cache:
