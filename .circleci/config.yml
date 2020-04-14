@@ -61,10 +61,10 @@ jobs:
           command: docker login -u $REGISTRY_USER --password "$REGISTRY_PASSWORD"
       - run:
           name: Build Docker Container
-          command: docker build -f Dockerfile -t $IMAGE:latest .
+          command: docker build -f Dockerfile -t $IMAGE:<< pipeline.number >> .
       - run:
           name: Push to Docker Hub
-          command: docker push $IMAGE:latest
+          command: docker push $IMAGE:<< pipeline.number >>
 
   publish_tag:
     docker:
