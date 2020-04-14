@@ -52,6 +52,7 @@ jobs:
       - image: docker:stable
     environment:
       IMAGE: undeadops/enigma
+      TAG: ${CIRCLE_SHA1:0:7}
     steps:
       - setup_remote_docker
       - attach_workspace:
@@ -64,10 +65,10 @@ jobs:
           command: docker login -u $REGISTRY_USER --password "$REGISTRY_PASSWORD"
       - run:
           name: Build Docker Container
-          command: docker build -f Dockerfile -t $IMAGE:$CIRCLE_WORKFLOW_ID .
+          command: docker build -f Dockerfile -t $IMAGE:$TAG .
       - run:
           name: Push to Docker Hub
-          command: docker push $IMAGE:$CIRCLE_WORKFLOW_ID
+          command: docker push $IMAGE:$TAG
 
   publish_tag:
     docker:
