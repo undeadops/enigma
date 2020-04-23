@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/go-chi/chi v4.0.3+incompatible
+	github.com/go-chi/cors v1.1.1
 	github.com/go-chi/render v1.0.1
 	github.com/matryer/moq v0.0.0-20200125112110-7615cbe60268 // indirect
 	github.com/stretchr/testify v1.5.1
