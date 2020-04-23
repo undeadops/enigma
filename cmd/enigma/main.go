@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -58,6 +59,7 @@ func main() {
 	defer cancel()
 
 	// Connect to database
+	fmt.Printf("Connecting to Database\n")
 	qrepo, err := db.NewQuestionsRepo(ctx, c.URI, c.DB)
 	if err != nil {
 		// Implement better health checking/retry here or in lib
@@ -72,5 +74,6 @@ func main() {
 		r.Mount("/questions", questions.Router(qhandler))
 	})
 
+	fmt.Printf("Starting up Webserver\n")
 	log.Fatal(http.ListenAndServe(":"+defaultPort, router))
 }
