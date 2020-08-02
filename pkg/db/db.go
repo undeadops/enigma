@@ -2,6 +2,11 @@ package db
 
 import (
 	"context"
+	"fmt"
+	"log"
+	"time"
+
+	"github.com/pkg/errors"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -12,13 +17,36 @@ type QuestionsRepo struct {
 	*mongo.Collection
 }
 
+func connectLoop(ctx context.Context, client *options.ClientOptions) (*mongo.Client, error) {
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+
+	timeout := 5 * time.Minute
+
+	timeoutExceeded := time.After(timeout)
+	for {
+		select {
+		case <-timeoutExceeded:
+			return nil, fmt.Errorf("db connection failed after %s timeout", timeout)
+
+		case <-ticker.C:
+			db, err := mongo.Connect(ctx, client)
+			if err == nil {
+				return db, nil
+			}
+			log.Println(errors.Wrapf(err, "Failed to connect to db %s", client.Hosts))
+		}
+	}
+}
+
 // NewQuestionsRepo - Connect to Database and return connection
 func NewQuestionsRepo(ctx context.Context, config string, db string) (*QuestionsRepo, error) {
 	clientOptions := options.Client().ApplyURI(config)
 
 	// TODO: Implement Initial Retry Logic Here Maybe? or higherlevel in main function?
 	// Connect to MongoDB
-	client, err := mongo.Connect(ctx, clientOptions)
+	//client, err := mongo.Connect(ctx, clientOptions)
+	client, err := connectLoop(ctx, clientOptions)
 
 	if err != nil {
 		return &QuestionsRepo{}, err
