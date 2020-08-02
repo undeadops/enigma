@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -17,9 +18,6 @@ import (
 	"github.com/undeadops/enigma/pkg/db"
 	"github.com/undeadops/enigma/pkg/questions"
 )
-
-const defaultPortVariable = "PORT"
-const defaultPort = "3000"
 
 // Debug - Enable debug logging
 var Debug = flag.Bool("debug", false, "Enable Debug Logging")
@@ -53,6 +51,12 @@ func main() {
 
 	c := config.New()
 
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		log.Fatal("$PORT must be set")
+	}
+
 	// Setup Connection timeouts
 	ctx := context.Background()
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
@@ -75,5 +79,5 @@ func main() {
 	})
 
 	fmt.Printf("Starting up Webserver\n")
-	log.Fatal(http.ListenAndServe(":"+defaultPort, router))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
