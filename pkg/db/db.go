@@ -34,7 +34,7 @@ func connectLoop(ctx context.Context, client *options.ClientOptions) (*mongo.Cli
 			if err == nil {
 				return db, nil
 			}
-			log.Println(errors.Wrapf(err, "Failed to connect to db %s", client.Hosts))
+			log.Println(errors.Wrapf(err, "Ticker Failed to connect to db %s", client.Hosts))
 		}
 	}
 }

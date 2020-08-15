@@ -74,6 +74,13 @@ func main() {
 
 	// Setup Router
 	router := router()
+
+	router.Use(middleware.Heartbeat("/ping"))
+
+	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("hello world"))
+	})
+
 	router.Route("/api/v1", func(r chi.Router) {
 		r.Mount("/questions", questions.Router(qhandler))
 	})

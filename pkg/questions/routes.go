@@ -22,6 +22,9 @@ func NewHandler(q models.QuestionsData) *Handler {
 // Router - A completely separate router the questions data storage handle
 func Router(h *Handler) http.Handler {
 	r := chi.NewRouter()
+
+	r.Use(authHandler)
+
 	r.Get("/", h.GetResponses)
 	r.Get("/{id:[0-9]+}", h.GetResponseID)
 	r.Post("/", h.SaveResponse)
