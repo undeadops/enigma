@@ -5,17 +5,22 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+
 	"github.com/undeadops/enigma/pkg/models"
 )
 
 // SaveResponse - write out question to database
 func (h *Handler) SaveResponse(w http.ResponseWriter, r *http.Request) {
 	post := &models.Response{}
-	json.NewDecoder(r.Body).Decode(&post)
-
-	err := h.repo.SaveResponse(r.Context(), post)
+	err := json.NewDecoder(r.Body).Decode(&post)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Server Error")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = h.repo.SaveResponse(r.Context(), post)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Server Error"+err.Error())
 	}
 
 	respondWithJSON(w, http.StatusCreated, map[string]string{"message": "Successfully Created"})

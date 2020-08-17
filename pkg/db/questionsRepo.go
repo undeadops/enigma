@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -13,6 +14,10 @@ import (
 
 // SaveResponse - Save Reponse to database
 func (qr *QuestionsRepo) SaveResponse(ctx context.Context, r *models.Response) error {
+	// Set ID
+	r.ID = primitive.NewObjectID()
+	// Set time
+	r.Date = time.Now()
 
 	insertResult, err := qr.InsertOne(ctx, r)
 	if err != nil {

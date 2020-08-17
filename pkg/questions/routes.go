@@ -26,9 +26,9 @@ func Router(h *Handler) http.Handler {
 	r.Use(authHandler)
 
 	r.Get("/", h.GetResponses)
-	r.Get("/{id:[0-9]+}", h.GetResponseID)
+	r.Get("/{id:[0-9a-f]+}", h.GetResponseID)
 	r.Post("/", h.SaveResponse)
-	r.Put("/{id:[0-9]+}", h.UpdateResponse)
-	r.Delete("/{id:[0-9]+}", h.DeleteResponse)
+	r.Put("/{id:[0-9a-f]+}", h.UpdateResponse)
+	r.Delete("/{id:[0-9a-f]+}", h.DeleteResponse)
 	return r
 }

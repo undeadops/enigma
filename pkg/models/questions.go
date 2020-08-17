@@ -20,14 +20,13 @@ type QuestionsData interface {
 
 // Response - Answers to daily questions
 type Response struct {
-	ID        primitive.ObjectID `bson:"_id" json:"id,omitempty"`
+	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Date      time.Time          `json:"date" bson:"date"`
 	Questions []Question         `json:"questions" bson:"questions"`
 }
 
 // Question - Question And Answers
 type Question struct {
-	Date     time.Time `json:"date" bson:"date"`
-	Question string    `json:"question" bson:"question"`
-	Answer   string    `json:"answer" bson:"answer"`
+	Question string `json:"question" bson:"question"`
+	Answer   string `json:"answer" bson:"answer"`
 }
