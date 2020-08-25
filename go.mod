@@ -1,11 +1,12 @@
 module github.com/undeadops/enigma
 
-go 1.13
+go 1.14
 
 require (
 	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/cors v1.1.1
 	github.com/go-chi/render v1.0.1
+	github.com/honeycombio/beeline-go v0.6.2 // indirect
 	//github.com/kisielk/errcheck v1.2.0 // indirect
 	//github.com/matryer/moq v0.0.0-20200125112110-7615cbe60268 // indirect
 	github.com/stretchr/testify v1.6.1
