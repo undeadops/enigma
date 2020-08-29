@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/undeadops/enigma/pkg/config"
 	"github.com/undeadops/enigma/pkg/models"
 )
 
@@ -25,10 +26,10 @@ func Router(h *Handler) http.Handler {
 
 	r.Use(authHandler)
 
-	r.Get("/", h.GetResponses)
-	r.Get("/{id:[0-9a-f]+}", h.GetResponseID)
-	r.Post("/", h.SaveResponse)
-	r.Put("/{id:[0-9a-f]+}", h.UpdateResponse)
-	r.Delete("/{id:[0-9a-f]+}", h.DeleteResponse)
+	r.Get("/", config.HoneycombMiddleware(h.GetResponses))
+	r.Get("/{id:[0-9a-f]+}", config.HoneycombMiddleware(h.GetResponseID))
+	r.Post("/", config.HoneycombMiddleware(h.SaveResponse))
+	r.Put("/{id:[0-9a-f]+}", config.HoneycombMiddleware(h.UpdateResponse))
+	r.Delete("/{id:[0-9a-f]+}", config.HoneycombMiddleware(h.DeleteResponse))
 	return r
 }

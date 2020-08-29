@@ -17,9 +17,6 @@ import (
 	"github.com/undeadops/enigma/pkg/config"
 	"github.com/undeadops/enigma/pkg/db"
 	"github.com/undeadops/enigma/pkg/questions"
-
-	"github.com/honeycombio/beeline-go"
-	"github.com/honeycombio/beeline-go/wrappers/hnynethttp"
 )
 
 // Debug - Enable debug logging
@@ -55,22 +52,10 @@ func main() {
 	c := config.New()
 
 	port := os.Getenv("PORT")
-	honeyKey := os.Getenv("HONEY_KEY")
 
 	if port == "" {
 		log.Fatal("$PORT must be set")
 	}
-
-	// Setup Beeline
-	beeline.Init(beeline.Config{
-		WriteKey:    honeyKey,
-		Dataset:     "myData",
-		ServiceName: "enigma",
-		// ... additional optional configuration ...
-	})
-
-	// ensure everything gets sent off before we exit
-	defer beeline.Close()
 
 	// Setup Connection timeouts
 	ctx := context.Background()
@@ -92,14 +77,14 @@ func main() {
 
 	router.Use(middleware.Heartbeat("/ping"))
 
-	router.Get("/", hnynethttp.WrapHandlerFunc(index))
+	router.Get("/", index)
 
 	router.Route("/api/v1", func(r chi.Router) {
 		r.Mount("/questions", questions.Router(qhandler))
 	})
 
 	fmt.Printf("Starting up Webserver\n")
-	log.Fatal(http.ListenAndServe(":"+port, hnynethttp.WrapHandler(router)))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }
 
 func index(w http.ResponseWriter, r *http.Request) {

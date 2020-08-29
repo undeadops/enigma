@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	libhoney "github.com/honeycombio/libhoney-go"
 )
 
 func authHandler(next http.Handler) http.Handler {
@@ -34,4 +36,20 @@ func authHandler(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func hnyEventFromRequest(r *http.Request) *libhoney.Event {
+	ev, ok := r.Context().Value("questionsHandlers").(*libhoney.Event)
+	if !ok {
+		// We control the way this is being put on context anyway.
+		panic("Couldn't get libhoney event from request context")
+	}
+
+	return ev
+}
+
+func addFinalErr(err *error, ev *libhoney.Event) {
+	if *err != nil {
+		ev.AddField("error", (*err).Error())
+	}
 }
