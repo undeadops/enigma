@@ -14,7 +14,7 @@ import (
 func init() {
 	hcConfig := libhoney.Config{
 		WriteKey: os.Getenv("HONEY_KEY"),
-		Dataset:  hnyDatasetName,
+		Dataset:  "myData",
 	}
 
 	// This will ensure that our libhoney events get printed to the
