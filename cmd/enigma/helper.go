@@ -11,10 +11,14 @@ import (
 	libhoney "github.com/honeycombio/libhoney-go"
 )
 
+var (
+	hnyDatasetName = "myData"
+)
+
 func init() {
 	hcConfig := libhoney.Config{
 		WriteKey: os.Getenv("HONEY_KEY"),
-		Dataset:  "myData",
+		Dataset:  hnyDatasetName,
 	}
 
 	// This will ensure that our libhoney events get printed to the
