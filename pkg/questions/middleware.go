@@ -39,7 +39,7 @@ func authHandler(next http.Handler) http.Handler {
 }
 
 func hnyEventFromRequest(r *http.Request) *libhoney.Event {
-	ev, ok := r.Context().Value("questionsHandlers").(*libhoney.Event)
+	ev, ok := r.Context().Value("enigmaEvent").(*libhoney.Event)
 	if !ok {
 		// We control the way this is being put on context anyway.
 		panic("Couldn't get libhoney event from request context")
