@@ -11,12 +11,14 @@ import (
 // Handler - Context for Handling of Questions routes
 type Handler struct {
 	repo models.QuestionsData
+	qset models.QuestionSetData
 }
 
 // NewHandler - Initialize Handler
-func NewHandler(q models.QuestionsData) *Handler {
+func NewHandler(q models.QuestionsData, qs models.QuestionSetData) *Handler {
 	return &Handler{
 		repo: q,
+		qset: qs,
 	}
 }
 
@@ -31,5 +33,9 @@ func Router(h *Handler) http.Handler {
 	r.Post("/", config.HoneycombMiddleware(h.SaveResponse))
 	r.Put("/{id:[0-9a-f]+}", config.HoneycombMiddleware(h.UpdateResponse))
 	r.Delete("/{id:[0-9a-f]+}", config.HoneycombMiddleware(h.DeleteResponse))
+
+	r.Get("/sets/", config.HoneycombMiddleware(h.GetQuestionSet))
+	r.Post("/sets/", config.HoneycombMiddleware(h.SaveQuestionSet))
+
 	return r
 }

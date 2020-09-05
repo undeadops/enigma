@@ -30,3 +30,18 @@ type Question struct {
 	Question string `json:"question" bson:"question"`
 	Answer   string `json:"answer" bson:"answer"`
 }
+
+// QuestionSetData - Storage Abstraction for what questions to ask
+type QuestionSetData interface {
+	SaveQuestionSet(ctx context.Context, qs *QuestionSet) error
+	DeleteQuestionSet(ctx context.Context, qs string) error
+	ListQuestionSet(ctx context.Context) ([]*QuestionSet, error)
+	GetQuestionSet(ctx context.Context, qsID string) (*QuestionSet, error)
+}
+
+// QuestionSet - Set of Questions to ask
+type QuestionSet struct {
+	ID          primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Date        time.Time          `bson:"date" json:"date"`
+	QuestionSet []string           `bson:"question_set" json:"question_set"`
+}

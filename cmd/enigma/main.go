@@ -70,7 +70,12 @@ func main() {
 		log.Fatalf("Cannot set up Database: %v", err)
 	}
 
-	qhandler := questions.NewHandler(qrepo)
+	qset, err := db.NewQuestionSetRepo(ctx, c.URI, "question_set")
+	if err != nil {
+		log.Fatalf("Cannot set up Database: %v", err)
+	}
+
+	qhandler := questions.NewHandler(qrepo, qset)
 
 	// Setup Router
 	router := router()
