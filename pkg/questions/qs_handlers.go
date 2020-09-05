@@ -22,15 +22,13 @@ func (h *Handler) SaveQuestionSet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ev.AddField("save.questionset", post.ID)
-
 	queryStart := time.Now()
 	err = h.qset.SaveQuestionSet(r.Context(), post)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Server Error"+err.Error())
 	}
 	ev.AddField("timers.db.questionset_insert_ms", time.Since(queryStart)/time.Millisecond)
-
+	//ev.AddField("save.questionset", post.ID)
 	respondWithJSON(w, http.StatusCreated, map[string]string{"message": "Successfully Created"})
 }
 
