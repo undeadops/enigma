@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/chi"
 	"github.com/undeadops/enigma/pkg/models"
 )
 
@@ -49,4 +50,24 @@ func (h *Handler) GetQuestionSet(w http.ResponseWriter, r *http.Request) {
 	ev.AddField("get.questionset_return_count", len(results))
 
 	respondWithJSON(w, http.StatusOK, results)
+}
+
+// DeleteQuestionSet - DELETE question set id from question sets
+func (h *Handler) DeleteQuestionSet(w http.ResponseWriter, r *http.Request) {
+	var err error
+	ev := hnyEventFromRequest(r)
+	defer addFinalErr(&err, ev)
+
+	id := chi.URLParam(r, "id")
+
+	ev.AddField("response.id", id)
+
+	queryStart := time.Now()
+	err = h.qset.DeleteQuestionSet(r.Context(), id)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "Error Deleting ID")
+	}
+	ev.AddField("timers.db.questionset_delete_ms", time.Since(queryStart)/time.Millisecond)
+
+	respondWithJSON(w, http.StatusOK, map[string]string{"message": "Deleted"})
 }
