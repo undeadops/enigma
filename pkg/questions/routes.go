@@ -34,8 +34,8 @@ func Router(h *Handler) http.Handler {
 	r.Put("/{id:[0-9a-f]+}", config.HoneycombMiddleware(h.UpdateResponse))
 	r.Delete("/{id:[0-9a-f]+}", config.HoneycombMiddleware(h.DeleteResponse))
 
-	r.Get("/sets/", config.HoneycombMiddleware(h.GetQuestionSet))
-	r.Post("/sets/", config.HoneycombMiddleware(h.SaveQuestionSet))
+	r.Get("/sets", config.HoneycombMiddleware(h.GetQuestionSet))
+	r.Post("/sets", config.HoneycombMiddleware(h.SaveQuestionSet))
 
 	return r
 }
