@@ -1,9 +1,9 @@
 version: 2
 
-master_only: &master_only
+main_only: &main_only
   filters:
     branches:
-      only: master
+      only: main 
 
 tagged_release: &tagged_release
   filters:
@@ -13,7 +13,7 @@ tagged_release: &tagged_release
 jobs:
   build:
     docker:
-      - image: golang:1.14-alpine
+      - image: golang:1.15-alpine
     steps:
       - checkout
       - restore_cache:
@@ -38,7 +38,7 @@ jobs:
 
   test:
     docker:
-      - image: golang:1.14-alpine
+      - image: golang:1.15-alpine
     steps:
       - checkout
       - restore_cache:
@@ -59,7 +59,7 @@ jobs:
           at: /root
       - store_artifacts:
           path: ./enigma
-          destination: enigma.master
+          destination: enigma.main
       - run:
           name: Log in to docker hub
           command: docker login -u $REGISTRY_USER --password "$REGISTRY_PASSWORD"
@@ -107,7 +107,7 @@ workflows:
           requires:
             - build
       - publish:
-          <<: *master_only
+          <<: *main_only
           requires:
             - test
       # - publish_tag:
