@@ -8,5 +8,5 @@ require (
 	github.com/go-chi/render v1.0.1
 	github.com/honeycombio/libhoney-go v1.14.0
 	github.com/pkg/errors v0.9.1
-	go.mongodb.org/mongo-driver v1.4.1
+	go.mongodb.org/mongo-driver v1.5.1
 )
