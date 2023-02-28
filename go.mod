@@ -1,6 +1,6 @@
 module github.com/undeadops/enigma
 
-go 1.18
+go 1.19
 
 require (
 	github.com/go-chi/chi v4.1.2+incompatible
@@ -21,7 +21,7 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
-	github.com/klauspost/compress v1.15.15 // indirect
+	github.com/klauspost/compress v1.16.0 // indirect
 	github.com/montanaflynn/stats v0.7.0 // indirect
 	github.com/vmihailenco/msgpack/v4 v4.3.12 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
